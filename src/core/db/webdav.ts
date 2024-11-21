@@ -4,6 +4,13 @@ import MemoryStream from 'memorystream';
 import { createClient } from 'webdav';
 import { WebDAVClient } from 'webdav/dist/node/types';
 
+import https from 'https';
+// 忽略 SSL 证书
+// build 出现 ERR_OSSL_EVP_UNSUPPORTED 错误时使用 export NODE_OPTIONS=--openssl-legacy-provider
+const agent = new https.Agent({  
+  rejectUnauthorized: false
+});
+
 type WebDavOptions = {
   username: string;
   password: string;
@@ -23,6 +30,7 @@ export default class WebDav {
     this.client = createClient(url, {
       username,
       password,
+      httpsAgent: agent,
     });
     this.client
       .exists('/')
